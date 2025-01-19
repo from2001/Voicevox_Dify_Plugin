@@ -7,17 +7,20 @@ from dify_plugin.errors.model import CredentialsValidateFailedError
 
 logger = logging.getLogger(__name__)
 
-
 class VoicevoxModelProvider(ModelProvider):
     def validate_provider_credentials(self, credentials: Mapping) -> None:
         """
         Validate provider credentials
-        if validate failed, raise exception
-
-        :param credentials: provider credentials, credentials form defined in `provider_credential_schema`.
+        
+        :param credentials: provider credentials
+        :raises: CredentialsValidateFailedError if validation fails
         """
         try:
-            pass
+            model_instance = self.get_model_instance(ModelType.TTS)
+            model_instance.validate_credentials(
+                model='voicevox-tts',
+                credentials=credentials
+            )
         except CredentialsValidateFailedError as ex:
             raise ex
         except Exception as ex:
