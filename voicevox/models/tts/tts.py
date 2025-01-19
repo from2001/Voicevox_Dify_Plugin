@@ -13,6 +13,8 @@ from dify_plugin.errors.model import (
     InvokeServerUnavailableError,
 )
 
+from utils.yaml_updater import update_tts_yaml
+
 class VoicevoxText2SpeechModel(TTSModel):
     """
     Model class for VOICEVOX Text to Speech model.
@@ -24,7 +26,7 @@ class VoicevoxText2SpeechModel(TTSModel):
         content_text: str,
         voice: str,
         user: Optional[str] = None,
-        tenant_id: Optional[str] = None,  # Added tenant_id parameter
+        tenant_id: Optional[str] = None,
     ) -> bytes | Generator[bytes, None, None]:
         """
         Invoke text2speech model
@@ -50,7 +52,7 @@ class VoicevoxText2SpeechModel(TTSModel):
         self, model: str, credentials: dict, user: Optional[str] = None
     ) -> None:
         """
-        Validate credentials for text2speech model
+        Validate credentials for text2speech model and sync speaker list
 
         :param model: model name
         :param credentials: model credentials
@@ -61,18 +63,24 @@ class VoicevoxText2SpeechModel(TTSModel):
         if "voicevox_api_base" not in credentials:
             raise CredentialsValidateFailedError("VOICEVOX API Base URL is required")
 
-        # Test the API endpoint
+        # Test the API endpoint and sync speaker list
         try:
             with httpx.Client() as client:
-                # Try to get available speakers
-                response = client.get(f"{credentials['voicevox_api_base']}/speakers", timeout=10.0)
+                # Get available speakers
+                response = client.get(
+                    f"{credentials['voicevox_api_base']}/speakers",
+                    timeout=10.0
+                )
                 response.raise_for_status()
                 speakers = response.json()
                 
                 if not speakers:
                     raise CredentialsValidateFailedError("No speakers available in VOICEVOX API")
 
-                # Get the first available speaker ID
+                # Update tts.yaml with current speaker list
+                update_tts_yaml(speakers)
+
+                # Get the first available speaker ID for testing
                 first_speaker = '1'  # Default to speaker 1
                 for speaker in speakers:
                     if 'styles' in speaker and speaker['styles']:

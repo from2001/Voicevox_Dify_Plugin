@@ -1,26 +1,51 @@
 import logging
+import httpx
 from collections.abc import Mapping
 
 from dify_plugin import ModelProvider
 from dify_plugin.entities.model import ModelType
 from dify_plugin.errors.model import CredentialsValidateFailedError
 
+from utils.yaml_updater import update_tts_yaml
+
 logger = logging.getLogger(__name__)
 
 class VoicevoxModelProvider(ModelProvider):
     def validate_provider_credentials(self, credentials: Mapping) -> None:
         """
-        Validate provider credentials
+        Validate provider credentials and update TTS yaml file with current speaker list
         
         :param credentials: provider credentials
         :raises: CredentialsValidateFailedError if validation fails
         """
         try:
+            # Check if API base is provided
+            if "voicevox_api_base" not in credentials:
+                raise CredentialsValidateFailedError("VOICEVOX API Base URL is required")
+
+            # Fetch speakers from API
+            try:
+                with httpx.Client() as client:
+                    response = client.get(
+                        f"{credentials['voicevox_api_base']}/speakers",
+                        timeout=10.0
+                    )
+                    response.raise_for_status()
+                    speakers = response.json()
+
+                    # Update tts.yaml with current speaker list
+                    update_tts_yaml(speakers)
+
+            except httpx.HTTPError as ex:
+                raise CredentialsValidateFailedError(f"Failed to connect to VOICEVOX API: {str(ex)}")
+
+            # Validate model credentials
             model_instance = self.get_model_instance(ModelType.TTS)
             model_instance.validate_credentials(
-                model='voicevox-tts',
+                model='voicevox',
                 credentials=credentials
             )
+
         except CredentialsValidateFailedError as ex:
             raise ex
         except Exception as ex:
