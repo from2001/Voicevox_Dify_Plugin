@@ -173,3 +173,7 @@ cython_debug/
 # Others
 .DS_Store
 _temp/
+
+# Voicevox_Dify_Plugin
+dify-plugin-darwin-arm64
+voicevox.difypkg
