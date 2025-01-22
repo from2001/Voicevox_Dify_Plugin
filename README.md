@@ -1,0 +1,1 @@
+# Voicevox_Dify_Plugin

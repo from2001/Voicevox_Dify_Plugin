@@ -1,0 +1,39 @@
+provider: voicevox
+label:
+  en_US: Voicevox
+description:
+  en_US: Models provided by voicevox.
+  zh_Hans: Voicevox 提供的模型。
+icon_small:
+  en_US: icon.svg
+icon_large:
+  en_US: icon.svg
+background: "#E5E7EB"
+help:
+  title:
+    en_US: Get your API Key from voicevox
+    zh_Hans: 从 Voicevox 获取 API Key
+  url:
+    en_US: https://__put_your_url_here__/account/api-keys
+supported_model_types:
+  - tts
+configurate_methods:
+  - predefined-model
+provider_credential_schema:
+  credential_form_schemas:
+    - variable: voicevox_api_base
+      label:
+        en_US: API Base
+      type: text-input
+      required: true
+      placeholder:
+        en_US: Enter VOICEVOX API Base, e.g. https://your.voicevox.server:50021
+models:
+  tts:
+    predefined:
+      - "models/tts/*.yaml"
+extra:
+  python:
+    provider_source: provider/voicevox.py
+    model_sources:
+      - "models/tts/tts.py"
