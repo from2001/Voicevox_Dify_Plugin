@@ -1,3 +1,6 @@
+from typing import Generator, Mapping, Optional
+from dify_plugin.entities import I18nObject
+from dify_plugin.entities.model import ModelType, ModelPropertyKey, AIModelEntity
 import concurrent.futures
 from collections.abc import Generator
 from typing import Optional
@@ -13,7 +16,7 @@ from dify_plugin.errors.model import (
     InvokeServerUnavailableError,
 )
 
-from utils.yaml_updater import update_tts_yaml
+from utils.yaml_updater import update_tts_yaml, load_tts_yaml, load_speakers_data
 
 class VoicevoxText2SpeechModel(TTSModel):
     """
@@ -63,41 +66,48 @@ class VoicevoxText2SpeechModel(TTSModel):
         if "voicevox_api_base" not in credentials:
             raise CredentialsValidateFailedError("VOICEVOX API Base URL is required")
 
-        # Test the API endpoint and sync speaker list
         try:
-            with httpx.Client() as client:
-                # Get available speakers
-                response = client.get(
-                    f"{credentials['voicevox_api_base']}/speakers",
-                    timeout=10.0
-                )
-                response.raise_for_status()
-                speakers = response.json()
-                
-                if not speakers:
-                    raise CredentialsValidateFailedError("No speakers available in VOICEVOX API")
-
-                # Update tts.yaml with current speaker list
-                update_tts_yaml(speakers)
-
-                # Get the first available speaker ID for testing
-                first_speaker = '1'  # Default to speaker 1
-                for speaker in speakers:
-                    if 'styles' in speaker and speaker['styles']:
-                        first_speaker = str(speaker['styles'][0]['id'])
-                        break
-
-                # Test audio synthesis with a simple text
-                next(self._tts_invoke(
-                    model=model,
-                    credentials=credentials,
-                    content_text="こんにちは。",
-                    voice=first_speaker,
-                ))
+            speakers = load_speakers_data(credentials)
         except httpx.HTTPError as ex:
-            raise CredentialsValidateFailedError(f"Failed to connect to VOICEVOX API: {str(ex)}")
+            raise InvokeBadRequestError(f"Failed to connect to VOICEVOX API: {str(ex)}")
+        
+        try:
+            voices = update_tts_yaml(speakers)
+            if voices:
+                credentials["voices"] = voices
         except Exception as ex:
-            raise CredentialsValidateFailedError(f"Failed to validate VOICEVOX credentials: {str(ex)}")
+            raise CredentialsValidateFailedError(str(ex))
+
+    def get_customizable_model_schema(self, model: str, credentials: Mapping) -> AIModelEntity | None:
+        # get tts model voices
+        try:
+            speakers = load_speakers_data(credentials)
+            voices = update_tts_yaml(speakers)
+        except httpx.HTTPError as ex:
+            raise InvokeBadRequestError(f"Failed to connect to VOICEVOX API: {str(ex)}")
+        
+        if not voices:
+            return None
+        
+        # use model to get model name
+        model_name = ""
+        for voice in voices:
+            if voice["value"] == model:
+                model_name = voice["name"]
+                break
+        
+        if not model_name:
+            return None
+
+        return AIModelEntity(
+            model=model,
+            label=I18nObject(
+                zh_Hans=voices[0]["name"],
+                en_US=voices[0]["name"]
+            ),
+            model_type=ModelType.TTS,
+            model_properties={ModelPropertyKey.VOICES: voices}
+        )
 
     def _tts_invoke(self, model: str, credentials: dict, content_text: str, voice: str) -> Generator[bytes, None, None]:
         """
