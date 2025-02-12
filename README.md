@@ -5,7 +5,10 @@ VOICEVOX DIFY Plugin is a TTS (Text-to-Speech) plugin for the Dify platform that
 
 ## Installation
 
-Download `voicevox.difypkg` and install it selecting `Local Package File` in the Plugins section on your Dify console.
+Download `voicevox.difypkg` in the [release](https://github.com/from2001/Voicevox_Dify_Plugin/releases) section and install it selecting `Local Package File` in the Plugins section on your Dify console.
+
+<img width="1031" alt="install_plugin" src="https://github.com/user-attachments/assets/eb8bd9dd-9af2-4c24-a35a-3dcf5d3a5afe" />
+
 
 ## Development
 
