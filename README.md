@@ -3,6 +3,10 @@
 ## Overview
 VOICEVOX DIFY Plugin is a TTS (Text-to-Speech) plugin for the Dify platform that integrates with VOICEVOX, a free Japanese voice synthesis engine. This plugin allows Dify applications to convert text into natural-sounding Japanese speech using various voice models. This plugin is compatible with Dify 1.x.
 
+This plugin works with
+ - VOICEVOX
+ - AivisSpeech
+
 ## Installation
 
 Download `voicevox.difypkg` in the [release](https://github.com/from2001/Voicevox_Dify_Plugin/releases) section and install it selecting `Local Package File` in the Plugins section on your Dify console.
@@ -16,7 +20,7 @@ Download `voicevox.difypkg` in the [release](https://github.com/from2001/Voicevo
 
 #### At your local develop environment
 
-1. Ensure you have Python 3.10+ installed
+1. Ensure you have Python 3.12+ installed
 2. Install the required dependencies:
     ```sh
     pip install -r ./voicevox/requirements.txt
@@ -36,7 +40,7 @@ Remote debugging information is available here.
 
 1. If you get `plugin verification` error, set `FORCE_VERIFYING_SIGNATURE=false`. See more [details](https://github.com/langgenius/dify-docs/blob/main/en/learn-more/faq/plugins.md).
 
-2. Install FFMpeg
+2. Install FFMpeg (required just for Dify v1.0.0-beta.1)
 
 This process is only required with v1.0.0-beta.1 since ffmpeg will be included in the newer version of docker-plugin_daemon docker image.
 ```sh
@@ -75,9 +79,20 @@ chmod +x dify-plugin-darwin-arm64
 ```
 `voicevox.difypkg` will be generated.
 
+## Links
+ - [Dify](https://dify.ai/)
+ - [VOICEVOX](https://voicevox.hiroshiba.jp/)
+ - [AivisSpeech](https://aivis-project.com/)
 
 
 ## Acknowledgments
 This project was inspired by and references code from the following sources:  
 
  - [dify-voicevox-tts](https://github.com/uezo/dify-voicevox-tts) by uezo
+
+## ToDo
+- [x] Basic TTS mpdel feature
+- [x] Update voice list based on the Voicevox speaker list API
+- [ ] Tool to generate voice file
+- [ ] Submit the plugin to the Dify plugin market place
+
