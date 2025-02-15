@@ -22,6 +22,24 @@ class VoicevoxText2SpeechModel(TTSModel):
     """
     Model class for VOICEVOX Text to Speech model.
     """
+    def get_tts_model_voices(self, model: str, credentials: dict, language: Optional[str] = None) -> Optional[list]:
+        """
+        Get available voices for the server
+
+        :param model: model name
+        :param credentials: model credentials
+        :param language: language code
+        :return: list of available voices
+        """
+        try:
+            speakers = load_speakers_data(credentials)
+            voices = update_tts_yaml(speakers)
+        except httpx.HTTPError as ex:
+            raise InvokeBadRequestError(f"Failed to connect to VOICEVOX API: {str(ex)}")
+        
+        return voices
+
+
     def _invoke(
         self,
         model: str,
