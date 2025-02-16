@@ -1,0 +1,17 @@
+identity:
+  author: from2001
+  name: voicevox-tool
+  label:
+    en_US: voicevox-tool
+    zh_Hans: voicevox-tool
+    pt_BR: voicevox-tool
+  description:
+    en_US: Voicevox tool
+    zh_Hans: Voicevox tool
+    pt_BR: Voicevox tool
+  icon: icon.svg
+tools:
+  - tools/voicevox-tool.yaml
+extra:
+  python:
+    source: provider/voicevox-tool.py
