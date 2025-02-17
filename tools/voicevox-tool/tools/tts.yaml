@@ -1,0 +1,31 @@
+identity:
+  name: voicevox-tool
+  author: from2001
+  label:
+    en_US: Voicevox-tool TTS
+description:
+  human:
+    en_US: Voicevox tool TTS
+  llm: Voicevox tool
+parameters:
+  - name: content
+    type: string
+    required: true
+    label:
+      en_US: Text
+    human_description:
+      en_US: Text to be synthesized
+    llm_description: Text to be synthesized
+    form: llm
+  - name: style_id
+    type: string
+    required: true
+    label:
+      en_US: Style id
+    human_description:
+      en_US: Style id of voice
+    llm_description: style id
+    form: llm
+extra:
+  python:
+    source: tools/tts.py

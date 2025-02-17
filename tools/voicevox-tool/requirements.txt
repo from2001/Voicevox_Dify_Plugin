@@ -1,1 +1,5 @@
 dify_plugin
+ffmpeg
+httpx
+pydub
+pyyaml

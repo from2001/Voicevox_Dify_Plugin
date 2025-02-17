@@ -10,8 +10,23 @@ identity:
     zh_Hans: Voicevox tool
     pt_BR: Voicevox tool
   icon: icon.svg
+
+credentials_for_provider:
+  api_base:
+    type: text-input
+    required: true
+    label:
+      en_US: API Base
+      zh_Hans: API Base
+      pt_BR: API Base
+    placeholder:
+      en_US: Enter VOICEVOX API Base, e.g. https://your.voicevox.server:50021
+    help:
+      en_US: An endpoint is like "https://your.voicevox.server:50021"
+    default: 
+
 tools:
-  - tools/voicevox-tool.yaml
+  - tools/tts.yaml
 extra:
   python:
     source: provider/voicevox-tool.py
